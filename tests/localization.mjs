@@ -1,0 +1,9 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import ts from 'typescript';import vm from 'node:vm';
+const messages=JSON.parse(fs.readFileSync('lib/translations.json','utf8'));
+for(const[key,values]of Object.entries(messages))for(const[lang,range]of [['hi',/[\u0900-\u097f]/],['mr',/[\u0900-\u097f]/],['pa',/[\u0a00-\u0a7f]/],['gu',/[\u0a80-\u0aff]/]]){assert.ok(typeof values[lang]==='string'&&range.test(values[lang]),`${lang}: ${key}`);}
+for(const file of ['app/dashboard.tsx','app/campaign-lab.tsx','app/language-controls.tsx','app/growth-chart.tsx']){const source=ts.createSourceFile(file,fs.readFileSync(file,'utf8'),99,true,4);function visit(n){if(ts.isCallExpression(n)&&['tr','t'].includes(n.expression.getText(source))&&n.arguments[0]&&ts.isStringLiteral(n.arguments[0]))assert.ok(messages[n.arguments[0].text],`Missing translation: ${n.arguments[0].text}`);ts.forEachChild(n,visit)}visit(source)}
+const compiled=ts.transpileModule(fs.readFileSync('lib/i18n.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText;const sandbox={exports:{},require:(name)=>name==='./translations.json'?{default:messages}:name==='react'?{createContext:()=>({})}: {}};vm.runInNewContext(compiled,sandbox);const tr=sandbox.exports.translate;
+assert.equal(tr('Last mature cohort / day','en'),'Latest settled week: earnings per day');
+for(const lang of ['hi','mr','pa','gu']){const original='Initial listing: Competitor minus ₹1 covers your floor and contribution goal.';const result=tr(original,lang);assert.ok(!/[A-Za-z]{3}/.test(result),result);assert.equal(tr('Seller-owned product name','en'),'Seller-owned product name');}
+console.log('PASS: '+Object.keys(messages).length+' entries × 4 translations; all literal UI keys covered; compound history messages translated; user text preserved.');
+
