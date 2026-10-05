@@ -219,7 +219,7 @@ npx wrangler deploy --config wrangler.cloudflare.json
 
 On a new account, Wrangler may ask you to register a `workers.dev` subdomain. Use the URL returned by deployment. Future updates need only a build and deploy unless the database schema changes.
 
-The `.openai/hosting.json` file retains the starter’s build metadata with a generic `DB` binding. The Cloudflare deployment uses `wrangler.cloudflare.json` and does not require ChatGPT authentication. Local credentials, build output and database files are excluded from Git.
+The `config/hosting.json` file declares local storage bindings. Cloudflare deployment uses `wrangler.cloudflare.json`; the public demo requires no sign-in. Local credentials, build output and database files are excluded from Git.
 
 ## Scope and next steps
 

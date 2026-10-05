@@ -6,9 +6,6 @@ import "./dashboard.css";
 export const metadata: Metadata = {
   title: "Seller Pricing Lab",
   description: "A synthetic seller pricing and product lifecycle prototype.",
-  other: {
-    "codex-preview": "development",
-  },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
